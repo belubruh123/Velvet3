@@ -17,10 +17,8 @@ jobs:
         run: brew install ldid xz dpkg
       - name: Check out Theos
         run: git clone --quiet --recursive https://github.com/theos/theos.git "$THEOS"
-      - name: Build package
-        run: make package FINALPACKAGE=1
-      - name: Verify architecture slices
-        run: python3 tools/check-slices.py --require-arm64e packages/*.deb
+      - name: Build and verify
+        run: bash tools/ci-build.sh
       - uses: actions/upload-artifact@v4
         with:
           name: velvet3-deb
