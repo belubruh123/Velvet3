@@ -33,18 +33,37 @@ static NSString *VelvetIdentifierFor(id controller) {
     return [identifier isKindOfClass:NSString.class] ? identifier : nil;
 }
 
+/// The view holding the app icon. iOS 15/16 exposed it as `badgedIconView.iconView`;
+/// on iOS 18 the icon is a plain UIImageView inside NCBadgedIconView.
+static UIView *VelvetAppIconViewIn(id contentView) {
+    UIView *badgedIconView = VLTIvar(contentView, @"badgedIconView");
+    if (!badgedIconView) return nil;
+
+    id iconView = VLTSafePerform(badgedIconView, @selector(iconView));
+    if ([iconView isKindOfClass:UIView.class]) return (UIView *)iconView;
+
+    return VLTDescendantOfClass(badgedIconView, @"UIImageView");
+}
+
+/// The app icon image, which every "icon" colour type extracts its colour from.
+///
+/// iOS 15/16 handed this over as `prominentIcon` / `subordinateIcon` on the content
+/// view. **Both are gone in iOS 18** — the content view has no icon property at all any
+/// more. That single removal is why border, title, message and date colouring all did
+/// nothing on iOS 18 while corner radius kept working: with no icon there is no colour
+/// to extract, and every one of those features defaults to type "icon".
 static UIImage *VelvetAppIconIn(id contentView) {
     id icon = VLTSafePerform(contentView, @selector(prominentIcon));
     if (![icon isKindOfClass:UIImage.class]) {
         icon = VLTSafePerform(contentView, @selector(subordinateIcon));
     }
-    return [icon isKindOfClass:UIImage.class] ? (UIImage *)icon : nil;
-}
+    if ([icon isKindOfClass:UIImage.class]) return (UIImage *)icon;
 
-static UIView *VelvetAppIconViewIn(id contentView) {
-    id badgedIconView = VLTIvar(contentView, @"badgedIconView");
-    id iconView = VLTSafePerform(badgedIconView, @selector(iconView));
-    return [iconView isKindOfClass:UIView.class] ? (UIView *)iconView : nil;
+    UIView *iconView = VelvetAppIconViewIn(contentView);
+    if ([iconView isKindOfClass:UIImageView.class]) {
+        return ((UIImageView *)iconView).image;
+    }
+    return nil;
 }
 
 /// iOS 15 kept this on the controller's content view; iOS 16 moved it onto the short
@@ -93,6 +112,16 @@ static void VelvetReconResolutionReport(id controller, UIView *view, UIView *vel
         VLTReconNote(@"  dateLabel               %@", VLTDescribe(VLTIvar(contentView, @"dateLabel")));
         VLTReconNote(@"  footerTextLabel         %@", VLTDescribe(VLTIvar(contentView, @"footerTextLabel")));
         VLTReconNote(@"  badgedIconView          %@", VLTDescribe(VLTIvar(contentView, @"badgedIconView")));
+        VLTReconNote(@"  -- app icon (source of every \"icon\" colour) --");
+        VLTReconNote(@"  prominentIcon           %@", VLTDescribe(VLTSafePerform(contentView, @selector(prominentIcon))));
+        VLTReconNote(@"  subordinateIcon         %@", VLTDescribe(VLTSafePerform(contentView, @selector(subordinateIcon))));
+        VLTReconNote(@"  appIconView             %@", VLTDescribe(VelvetAppIconViewIn(contentView)));
+        UIImage *resolvedIcon = VelvetAppIconIn(contentView);
+        VLTReconNote(@"  resolved appIcon        %@ %@", VLTDescribe(resolvedIcon),
+                     resolvedIcon ? NSStringFromCGSize(resolvedIcon.size) : @"");
+        Velvet3Colorizer *probe = [[Velvet3Colorizer alloc] initWithIdentifier:VelvetIdentifierFor(controller)];
+        probe.appIcon = resolvedIcon;
+        VLTReconNote(@"  extracted iconColor     %@", probe.iconColor ?: (id)@"** nil **");
         VLTReconNote(@"  -- our overlay --");
         VLTReconNote(@"  velvetView              %@", VLTDescribe(velvetView));
         VLTReconNote(@"  velvetView.superview    %@", VLTDescribe(velvetView.superview));
@@ -117,6 +146,12 @@ static void VelvetReconResolutionReport(id controller, UIView *view, UIView *vel
         for (NSString *key in @[@"backgroundType", @"borderType", @"titleType", @"messageType", @"dateType"]) {
             VLTReconNote(@"  %-24@ %@", key,
                          [prefsManager settingForKey:key withIdentifier:identifier] ?: @"(unset)");
+        }
+        // A stored colour is "r g b a"; anything else parses to clearColor, which paints
+        // nothing and looks identical to a feature that failed.
+        for (NSString *key in @[@"backgroundColor", @"borderColor", @"titleColor", @"messageColor", @"dateColor"]) {
+            VLTReconNote(@"  %-24@ %@", key,
+                         [prefsManager settingForKey:key withIdentifier:identifier] ?: @"** NOT SET (paints clear) **");
         }
     });
 }
