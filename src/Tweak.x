@@ -68,6 +68,44 @@ static void VelvetPrepareLayers(UIView *view) {
     }
 }
 
+/// One-shot report of which private lookups actually resolved on this iOS version, and
+/// where our injected overlay ended up. Corner radius works because it is applied to
+/// Apple's own views; anything driven by an ivar lookup or by our overlay needs this to
+/// tell us whether it resolved at all before there is any point debugging the drawing.
+static void VelvetReconResolutionReport(id controller, UIView *view, UIView *velvetView) {
+    if (!VLTReconEnabled()) return;
+
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        UIView *material    = VelvetMaterialViewIn(view);
+        UIView *contentView = VelvetContentViewIn(view);
+
+        VLTReconNote(@"\n========== RESOLUTION REPORT ==========");
+        VLTReconNote(@"  viewForPreview          %@", VLTDescribe(view));
+        VLTReconNote(@"  material (blur)         %@", VLTDescribe(material));
+        VLTReconNote(@"  material.superview      %@", VLTDescribe(material.superview));
+        VLTReconNote(@"  contentView             %@", VLTDescribe(contentView));
+        VLTReconNote(@"  identifier              %@", VelvetIdentifierFor(controller) ?: @"** nil **");
+        VLTReconNote(@"  stackDimming            %@", VLTDescribe(VelvetStackDimmingViewFor(controller, view)));
+        VLTReconNote(@"  -- labels (ivars of contentView) --");
+        VLTReconNote(@"  primaryTextLabel        %@", VLTDescribe(VLTIvar(contentView, @"primaryTextLabel")));
+        VLTReconNote(@"  secondaryTextElement    %@", VLTDescribe(VLTIvar(contentView, @"secondaryTextElement")));
+        VLTReconNote(@"  dateLabel               %@", VLTDescribe(VLTIvar(contentView, @"dateLabel")));
+        VLTReconNote(@"  footerTextLabel         %@", VLTDescribe(VLTIvar(contentView, @"footerTextLabel")));
+        VLTReconNote(@"  badgedIconView          %@", VLTDescribe(VLTIvar(contentView, @"badgedIconView")));
+        VLTReconNote(@"  -- our overlay --");
+        VLTReconNote(@"  velvetView              %@", VLTDescribe(velvetView));
+        VLTReconNote(@"  velvetView.superview    %@", VLTDescribe(velvetView.superview));
+        VLTReconNote(@"  velvetView.frame        %@", NSStringFromCGRect(velvetView.frame));
+        VLTReconNote(@"  material.frame          %@", NSStringFromCGRect(material.frame));
+        VLTReconNote(@"  velvetView index        %ld of %lu siblings",
+                     velvetView.superview ? (long)[velvetView.superview.subviews indexOfObject:velvetView] : -1L,
+                     (unsigned long)velvetView.superview.subviews.count);
+        VLTReconNote(@"  velvetView hidden=%d alpha=%.2f bg=%@",
+                     velvetView.hidden, velvetView.alpha, velvetView.backgroundColor ?: (id)@"nil");
+    });
+}
+
 static CGFloat VelvetCornerRadiusFor(NSString *identifier, CGFloat containerHeight) {
     CGFloat defaultRadius = SYSTEM_VERSION_LESS_THAN(@"16.0") ? 19 : 23.5;
     BOOL custom = [[prefsManager settingForKey:@"cornerRadiusEnabled" withIdentifier:identifier] boolValue];
@@ -186,6 +224,10 @@ static CGFloat VelvetCornerRadiusFor(NSString *identifier, CGFloat containerHeig
     [colorizer colorMessage:VLTIvar(contentView, @"secondaryTextElement")];
     [colorizer colorDate:VLTIvar(contentView, @"dateLabel")];
     [colorizer setAppearance:self.view];
+
+    // Reported after styling has been applied, so the overlay's frame, z-order and
+    // resulting background colour are the real post-layout values.
+    VelvetReconResolutionReport(self, view, self.velvetView);
 }
 
 %end

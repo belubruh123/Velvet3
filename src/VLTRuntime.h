@@ -106,6 +106,10 @@ void VLTReconDumpClassAvailability(NSArray<NSString *> *classNames);
 /// Free-form line into the recon file.
 void VLTReconNote(NSString *format, ...) NS_FORMAT_FUNCTION(1, 2);
 
+/// "UILabel" for an object, "** nil **" for nothing. For resolution reports, where the
+/// interesting information is which lookups came back empty.
+NSString *VLTDescribe(id obj);
+
 #ifdef __cplusplus
 }
 #endif

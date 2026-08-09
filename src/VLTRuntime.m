@@ -261,6 +261,11 @@ void VLTReconNote(NSString *format, ...) {
     VLTReconAppend([msg stringByAppendingString:@"\n"]);
 }
 
+NSString *VLTDescribe(id obj) {
+    if (!obj) return @"** nil **";
+    return NSStringFromClass(object_getClass(obj));
+}
+
 void VLTReconDumpClassesWithPrefixes(NSArray<NSString *> *prefixes) {
     if (!VLTReconEnabled() || prefixes.count == 0) return;
 
