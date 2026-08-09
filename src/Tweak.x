@@ -103,6 +103,21 @@ static void VelvetReconResolutionReport(id controller, UIView *view, UIView *vel
                      (unsigned long)velvetView.superview.subviews.count);
         VLTReconNote(@"  velvetView hidden=%d alpha=%.2f bg=%@",
                      velvetView.hidden, velvetView.alpha, velvetView.backgroundColor ?: (id)@"nil");
+
+        // Without this, a nil colour is ambiguous: it means either the lookup failed or
+        // the feature is simply switched off in Settings.
+        NSString *identifier = VelvetIdentifierFor(controller);
+        VLTReconNote(@"  -- settings for identifier %@ --", identifier ?: @"(global)");
+        for (NSString *key in @[@"enabled", @"backgroundEnabled", @"borderEnabled", @"shadowEnabled",
+                                @"lineEnabled", @"titleEnabled", @"messageEnabled", @"dateEnabled",
+                                @"cornerRadiusEnabled", @"appIconHidden"]) {
+            VLTReconNote(@"  %-24@ %@", key,
+                         [prefsManager settingForKey:key withIdentifier:identifier] ?: @"(unset)");
+        }
+        for (NSString *key in @[@"backgroundType", @"borderType", @"titleType", @"messageType", @"dateType"]) {
+            VLTReconNote(@"  %-24@ %@", key,
+                         [prefsManager settingForKey:key withIdentifier:identifier] ?: @"(unset)");
+        }
     });
 }
 
