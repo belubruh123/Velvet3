@@ -5,18 +5,18 @@
 		},
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Show a custom line at the edge";
 			default = 1;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = lineEnabled;
 			label = "Enable Line";
 			systemIcon = "power";
 		},
         {
 			cell = PSLinkListCell;
-			cellClass = "Velvet2LinkCell";
-			defaults = "com.noisyflake.velvet2";
+			cellClass = "Velvet3LinkCell";
+			defaults = "com.tallplay.velvet3";
 			key = "linePosition";
 			detail = PSListItemsController;
 			label = "Position";
@@ -27,8 +27,8 @@
 		},
         {
 			cell = PSSliderCell;
-			cellClass = Velvet2Slider;
-			defaults = "com.noisyflake.velvet2";
+			cellClass = Velvet3Slider;
+			defaults = "com.tallplay.velvet3";
 			key = lineWidth;
 			min = 1;
 			max = 5;
@@ -44,7 +44,7 @@
 		},
 		{
 			cell = PSDefaultCell;
-			cellClass = Velvet2AppearanceCell;
+			cellClass = Velvet3AppearanceCell;
 			options = (
 				{
 					text = "Icon Color";
@@ -62,7 +62,7 @@
 					systemIcon = "humidity.fill";
 				},
 			);
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = "lineType";
 			height = 130;
 			require = "lineEnabled";
@@ -74,8 +74,8 @@
 		},
 		{
 			cell = PSSliderCell;
-			cellClass = Velvet2Slider;
-			defaults = "com.noisyflake.velvet2";
+			cellClass = Velvet3Slider;
+			defaults = "com.tallplay.velvet3";
 			key = lineIconAlpha;
 			min = 0;
 			max = 100;
@@ -86,8 +86,8 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.noisyflake.velvet2";
-			cellClass = Velvet2ColorPicker;
+			defaults = "com.tallplay.velvet3";
+			cellClass = Velvet3ColorPicker;
 			key = "lineColor";
 			label = "Color";
 			require = "lineEnabled&lineType=color";
@@ -95,8 +95,8 @@
 		},
 		{
 			cell = PSLinkListCell;
-			cellClass = "Velvet2LinkCell";
-			defaults = "com.noisyflake.velvet2";
+			cellClass = "Velvet3LinkCell";
+			defaults = "com.tallplay.velvet3";
 			key = "lineGradientDirection";
 			detail = PSListItemsController;
 			label = "Gradient Direction";
@@ -107,8 +107,8 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.noisyflake.velvet2";
-			cellClass = Velvet2ColorPicker;
+			defaults = "com.tallplay.velvet3";
+			cellClass = Velvet3ColorPicker;
 			key = "lineGradient1";
 			label = "Color 1";
 			require = "lineEnabled&lineType=gradient";
@@ -116,8 +116,8 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.noisyflake.velvet2";
-			cellClass = Velvet2ColorPicker;
+			defaults = "com.tallplay.velvet3";
+			cellClass = Velvet3ColorPicker;
 			key = "lineGradient2";
 			label = "Color 2";
 			require = "lineEnabled&lineType=gradient";

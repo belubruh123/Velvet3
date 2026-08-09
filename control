@@ -1,10 +1,11 @@
-Package: com.noisyflake.velvet2
-Name: Velvet 2
-Version: 2.1.2
-Architecture: iphoneos-arm
-Description: A fully customizable notification experience
-Maintainer: NoisyFlake
-Author: NoisyFlake
+Package: com.tallplay.velvet3
+Name: Velvet 3
+Version: 3.0.0
+Architecture: iphoneos-arm64
+Description: A fully customizable notification experience. iOS 17/18 fork of NoisyFlake's Velvet 2.
+Maintainer: tallplay
+Author: NoisyFlake (original), tallplay (iOS 18 fork)
 Section: Tweaks
-Depends: mobilesubstrate (>= 0.9.5000), preferenceloader
-Conflicts: com.initwithframe.velvet
+Depends: firmware (>= 15.0), ellekit | mobilesubstrate, preferenceloader
+Conflicts: com.initwithframe.velvet, com.noisyflake.velvet2
+Replaces: com.noisyflake.velvet2

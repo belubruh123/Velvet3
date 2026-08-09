@@ -5,10 +5,10 @@
 		},
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Use a custom title color";
 			default = 1;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = titleEnabled;
 			label = "Enable Title";
 			systemIcon = "power";
@@ -20,7 +20,7 @@
 		},
 		{
 			cell = PSDefaultCell;
-			cellClass = Velvet2AppearanceCell;
+			cellClass = Velvet3AppearanceCell;
 			options = (
 				{
 					text = "Icon Color";
@@ -38,7 +38,7 @@
 					systemIcon = "humidity.fill";
 				},
 			);
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = "titleType";
 			height = 130;
 			require = "titleEnabled";
@@ -50,8 +50,8 @@
 		},
 		{
 			cell = PSSliderCell;
-			cellClass = Velvet2Slider;
-			defaults = "com.noisyflake.velvet2";
+			cellClass = Velvet3Slider;
+			defaults = "com.tallplay.velvet3";
 			key = titleIconAlpha;
 			min = 0;
 			max = 100;
@@ -62,8 +62,8 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.noisyflake.velvet2";
-			cellClass = Velvet2ColorPicker;
+			defaults = "com.tallplay.velvet3";
+			cellClass = Velvet3ColorPicker;
 			key = "titleColor";
 			label = "Color";
 			require = "titleEnabled&titleType=color";
@@ -71,8 +71,8 @@
 		},
 		{
 			cell = PSLinkListCell;
-			cellClass = "Velvet2LinkCell";
-			defaults = "com.noisyflake.velvet2";
+			cellClass = "Velvet3LinkCell";
+			defaults = "com.tallplay.velvet3";
 			key = "titleGradientDirection";
 			detail = PSListItemsController;
 			label = "Gradient Direction";
@@ -83,8 +83,8 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.noisyflake.velvet2";
-			cellClass = Velvet2ColorPicker;
+			defaults = "com.tallplay.velvet3";
+			cellClass = Velvet3ColorPicker;
 			key = "titleGradient1";
 			label = "Color 1";
 			require = "titleEnabled&titleType=gradient";
@@ -92,8 +92,8 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.noisyflake.velvet2";
-			cellClass = Velvet2ColorPicker;
+			defaults = "com.tallplay.velvet3";
+			cellClass = Velvet3ColorPicker;
 			key = "titleGradient2";
 			label = "Color 2";
 			require = "titleEnabled&titleType=gradient";

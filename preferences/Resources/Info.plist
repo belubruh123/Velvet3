@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Velvet2</string>
+	<string>Velvet3</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.noisyflake.velvet2</string>
+	<string>com.tallplay.velvet3</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -19,6 +19,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSPrincipalClass</key>
-	<string>Velvet2RootListController</string>
+	<string>Velvet3RootListController</string>
 </dict>
 </plist>

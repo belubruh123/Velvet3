@@ -6,7 +6,7 @@
 		},
 		{
 			cell = PSDefaultCell;
-			cellClass = Velvet2AppearanceCell;
+			cellClass = Velvet3AppearanceCell;
 			options = (
 				{
 					text = "System";
@@ -24,7 +24,7 @@
 					systemIcon = "moon.stars";
 				}
 			);
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = "appearance";
 			height = 120;
 		},
@@ -34,36 +34,36 @@
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Background";
 			label = "Background";
 			systemIcon = "rectangle.fill";
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Border";
 			label = "Border";
 			systemIcon = "rectangle";
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Line";
 			label = "Line";
 			systemIcon = "line.horizontal.star.fill.line.horizontal";
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Shadow";
 			label = "Glow";
 			systemIcon = "sparkles";
@@ -74,27 +74,27 @@
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Title";
 			label = "Title";
 			systemIcon = "character.bubble";
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Message";
 			label = "Message";
 			systemIcon = "text.bubble";
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2LinkCell;
+			cellClass = Velvet3LinkCell;
 			isController = 1;
-			detail = Velvet2CustomizationController;
+			detail = Velvet3CustomizationController;
 			key = "Date";
 			label = "Date";
 			systemIcon = "calendar";
@@ -105,20 +105,20 @@
 		},
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Don't display any icon";
 			default = 0;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = appIconHidden;
 			label = "Hide App Icon";
 			systemIcon = "square.slash";
         },
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Display app icon as a circle";
 			default = 0;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = appIconCornerRadiusCircle;
 			label = "Round App Icon";
 			systemIcon = "circle.square";
@@ -130,18 +130,18 @@
 		},
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Custom background corner radius";
 			default = 1;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = cornerRadiusEnabled;
 			label = "Corner Radius";
 			systemIcon = "rectangle.roundedtop";
         },
 		{
 			cell = PSSliderCell;
-			cellClass = Velvet2Slider;
-			defaults = "com.noisyflake.velvet2";
+			cellClass = Velvet3Slider;
+			defaults = "com.tallplay.velvet3";
 			key = cornerRadiusCustom;
 			min = 0;
 			max = 60;
@@ -154,10 +154,10 @@
 		},
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Don't dim notifications in a stack";
 			default = 0;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = stackDimmingViewHidden;
 			label = "No Stack Dimming";
 			systemIcon = "rectangle.stack";

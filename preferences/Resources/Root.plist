@@ -2,10 +2,10 @@
 	items = (
 		{
 			cell = PSSwitchCell;
-			cellClass = Velvet2Switch;
+			cellClass = Velvet3Switch;
 			cellSubtitleText = "Requires a Respring";
 			default = 1;
-			defaults = "com.noisyflake.velvet2";
+			defaults = "com.tallplay.velvet3";
 			key = enabled;
 			label = "Enable Tweak";
 			systemIcon = "power";
@@ -17,25 +17,25 @@
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2SubtitleLinkCell;
+			cellClass = Velvet3SubtitleLinkCell;
 			cellSubtitleText = "Apply to all notifications";
 			isController = 1;
-			detail = Velvet2SettingsController;
+			detail = Velvet3SettingsController;
 			label = "Global Settings";
 			systemIcon = "gear";
 		},
 		{
 			cell = PSLinkCell;
-			cellClass = Velvet2SubtitleLinkCell;
+			cellClass = Velvet3SubtitleLinkCell;
 			cellSubtitleText = "Overwrite Global Settings";
 			isController = 1;
-			detail = Velvet2AppSelectController;
+			detail = Velvet3AppSelectController;
 			label = "Per-App Settings";
 			systemIcon = "ellipsis";
 		},
 		{
 			cell = PSButtonCell;
-			cellClass = Velvet2Button;
+			cellClass = Velvet3Button;
 			action = resetSettings;
 			label = "Reset Settings";
 			confirmation = {
@@ -52,14 +52,14 @@
 		},
 		{
 			cell = PSButtonCell;
-			cellClass = Velvet2Button;
+			cellClass = Velvet3Button;
 			action = twitter;
 			label = "Follow on Twitter";
 			systemIcon = "person.crop.circle.badge.plus";
 		},
 		{
 			cell = PSButtonCell;
-			cellClass = Velvet2Button;
+			cellClass = Velvet3Button;
 			action = paypal;
 			label = "Buy me a coffee";
 			systemIcon = "gift";
