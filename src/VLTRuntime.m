@@ -8,6 +8,7 @@ static NSString *const kVLTPrefsDir  = @"/var/mobile/Library/Preferences";
 static NSString *const kVLTDisabled  = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.disabled";
 static NSString *const kVLTCounter   = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.launchcount";
 static NSString *const kVLTReconFlag = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.recon";
+static NSString *const kVLTReconSafeFlag = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe";
 static NSString *const kVLTReconOut  = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt";
 
 // Three consecutive loads that never reached the "SpringBoard survived" mark.
@@ -205,13 +206,23 @@ void VLTArmWatchdogReset(void) {
 
 #pragma mark - Recon
 
+BOOL VLTReconSafeMode(void) {
+    static BOOL safeMode;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        safeMode = [NSFileManager.defaultManager fileExistsAtPath:kVLTReconSafeFlag];
+    });
+    return safeMode;
+}
+
 BOOL VLTReconEnabled(void) {
     static BOOL enabled;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         enabled = [NSFileManager.defaultManager fileExistsAtPath:kVLTReconFlag];
     });
-    return enabled;
+    // Observation-only mode still needs the dumps written — that is the whole point.
+    return enabled || VLTReconSafeMode();
 }
 
 static void VLTReconAppend(NSString *text) {

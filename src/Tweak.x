@@ -354,6 +354,16 @@ static CGFloat VelvetCornerRadiusFor(NSString *identifier, CGFloat containerHeig
             VLTReconDumpClassesWithPrefixes(@[@"NCNotification", @"NCBadged", @"MTMaterial", @"PLPlatter"]);
         }
 
+        // Observation-only: we have written everything the runtime can tell us without
+        // touching a single method. Stop here. If the dump file exists after a respring,
+        // the dylib was injected — which on an arm64e device is exactly the question an
+        // arm64-only build needs answered.
+        if (VLTReconSafeMode()) {
+            VLTLog(@"recon-safe mode — dumped runtime state, installing no hooks");
+            VLTArmWatchdogReset();
+            return;
+        }
+
         // Hook only what this iOS version actually has. A %hook on a class that does not
         // exist is not something to hand to the hooking engine.
         if (NSClassFromString(@"NCNotificationShortLookViewController")) {

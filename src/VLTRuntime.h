@@ -79,6 +79,13 @@ void VLTArmWatchdogReset(void);
 /// /var/mobile/Library/Preferences/com.tallplay.velvet3.recon (Filza: New > File).
 BOOL VLTReconEnabled(void);
 
+/// Observation only: dump what the runtime has, then install NO hooks at all. This is
+/// the zero-risk first install on a new iOS version — it answers "did the dylib even get
+/// injected?" and "what are these classes called now?" without a single method being
+/// swizzled. Enabled by the flag file
+/// /var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe
+BOOL VLTReconSafeMode(void);
+
 /// Class chain, every ivar (name + type + runtime class of the current value) and
 /// every declared property of `obj`. Deduplicated: each class is dumped once.
 void VLTReconDumpObject(id obj, NSString *label);

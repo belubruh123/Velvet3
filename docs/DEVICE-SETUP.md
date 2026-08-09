@@ -93,13 +93,34 @@ same classes and must never both be loaded.
 ## 3. Recon mode — finding out what iOS 18 renamed
 
 Recon makes the tweak dump the real iOS 18 class names, ivars and view hierarchy to a
-file. It is **read-only**: it observes and writes a text file, it changes nothing.
+file. There are two levels, and **you want the first one for your first install.**
 
-**Turn it on** — create an empty file (Filza: **+ → File**, or over SSH):
+### 3a. Recon-safe — observation only, no hooks (do this first)
+
+```bash
+touch /var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe
+```
+
+In this mode the tweak dumps everything the ObjC runtime can tell it and then **returns
+without installing a single hook.** Nothing is swizzled, so no code of ours ever runs
+inside a notification. It answers the two questions that matter right now:
+
+- **Did the dylib get injected at all?** If the `.txt` appears, yes.
+- **What are these classes called on iOS 18?** The dump lists every registered
+  `NCNotification*` class and flags which of the iOS 15/16 names have gone missing.
+
+This is the mode to install first on any new iOS version.
+
+### 3b. Full recon — hooks installed, deep dumps
 
 ```bash
 touch /var/mobile/Library/Preferences/com.tallplay.velvet3.recon
 ```
+
+Adds live ivar/property dumps and the view tree, which requires the hooks to be active.
+The hooks are hardened (every private access fails soft) and the crash watchdog is armed,
+but this *is* running our code inside SpringBoard — do it after 3a has confirmed
+injection works. Delete the `.reconsafe` file when you move to this.
 
 Respring. Then trigger a few notifications from different apps (Messages, Mail, anything
 with an icon), let a couple stack up, and open the Focus summary if you use one.
@@ -180,26 +201,38 @@ confirm notifications go back to stock, delete it, respring again.
 
 ---
 
-## 6. About the arm64e build
+## 6. Can I install the arm64-only build on an A12?
 
-Short version: **install the macOS CI build, not the Linux one, for real use.**
+**Installing it: yes.** The package's `Architecture: iphoneos-arm64` is the *rootless
+package* architecture — every rootless tweak says that, regardless of what slices its
+dylib contains. dpkg and Sileo will accept it without complaint.
 
-A12+ devices run SpringBoard as arm64e. There are two arm64e ABIs, and only Apple's Xcode
-clang emits the iOS 14+ one; Theos on Linux emits the pre-iOS-14 one, which iOS 15+
-refuses to load — and because dyld *prefers* the arm64e slice, including a bad one breaks
-loading entirely rather than falling back to arm64. So Linux builds here are deliberately
-arm64-only.
+**Whether it then loads into SpringBoard is the open question.** A12+ devices run
+SpringBoard as arm64e, and our Linux build has only an arm64 slice. ElleKit does not gate
+on architecture itself — its injector just calls `dlopen()` — so this comes down to
+dyld's slice-selection rules, and I could not find an authoritative answer either way.
 
-Whether an arm64-only dylib injects into arm64e SpringBoard is worth one cheap
-experiment, and the recon build is the perfect harmless way to run it: install the
-arm64-only build with recon enabled and respring.
+So test it, with the zero-risk mode from [§3a](#3a-recon-safe--observation-only-no-hooks-do-this-first):
 
-- **`com.tallplay.velvet3.recon.txt` appears** → arm64 injection works; the Linux box can
-  drive the whole loop.
-- **No file appears** → arm64-only does not inject; use the macOS CI build from then on.
+1. `touch /var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe`
+2. Install the .deb, respring.
+3. Look for `/var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt`.
 
-Either way it cannot crash anything — with recon on and nothing hooked yet, the worst
-case is that nothing happens.
+- **File appears** → the dylib was injected. arm64 works, and the Linux box can drive the
+  whole development loop.
+- **No file** → arm64-only does not inject into arm64e SpringBoard. Use the macOS CI
+  build from then on.
+
+In recon-safe mode no hooks are installed at all, so there is nothing of ours running
+inside a notification either way.
+
+### The three ways to get a working arm64e build
+
+| Option | Verdict |
+|---|---|
+| **Build on macOS** (`.github/workflows/build.yml`) | **Recommended.** Xcode clang emits the iOS 14+ arm64e ABI. Push the repo, let the runner build, download the artifact. No account-level cost, no device instability. |
+| Ship old-ABI arm64e + install "Legacy arm64e Support" from the ElleKit repo | Works, but the shim hooks C functions and is documented as causing *system instability*; the standard tweak-dev guidance calls it a last resort. Not what you want on a device you are already debugging. |
+| Static patchers (e.g. Allemande) that rewrite an old-ABI slice | Documented as "not perfect and may not work 100% of the time", particularly around blocks in UIView. |
 
 Check any `.deb` before installing:
 
