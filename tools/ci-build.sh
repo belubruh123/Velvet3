@@ -26,9 +26,28 @@ set -euo pipefail
 
 DEPLOYMENT_TARGET="15.0"
 
+# iPhoneOS16.5 is the newest SDK theos/sdks publishes. The SDK version only governs which
+# public API headers exist at compile time, and nothing here uses public API newer than
+# that, so pinning it costs us nothing.
+SDK_NAME="iPhoneOS16.5.sdk"
+
+# Downloaded straight from the release asset rather than via $THEOS/bin/install-sdk.
+# install-sdk resolves the download through api.github.com unauthenticated, and CI
+# runners share IPs that are usually over the 60-request/hour anonymous rate limit — it
+# fails with "ERROR: api.github.com request failed?!" and takes the build with it.
+# /releases/latest/download/<asset> redirects without touching the API at all.
+SDK_URL="https://github.com/theos/sdks/releases/latest/download/${SDK_NAME}.tar.xz"
+
 if ! ls "$THEOS"/sdks/iPhoneOS*.sdk >/dev/null 2>&1; then
-    echo "==> Installing Theos patched SDK (Xcode's SDK has no private frameworks)"
-    "$THEOS/bin/install-sdk" latest
+    echo "==> Installing patched SDK $SDK_NAME (Xcode's SDK has no private frameworks)"
+    mkdir -p "$THEOS/sdks"
+    curl -fsSL "$SDK_URL" | tar -xJ -C "$THEOS/sdks"
+fi
+
+PREFERENCES_STUB="$THEOS/sdks/$SDK_NAME/System/Library/PrivateFrameworks/Preferences.framework/Preferences.tbd"
+if [ ! -f "$PREFERENCES_STUB" ]; then
+    echo "error: $PREFERENCES_STUB missing — the preference bundle will fail to link" >&2
+    exit 1
 fi
 
 SDK_PATH=$(ls -d "$THEOS"/sdks/iPhoneOS*.sdk | sort -V | tail -1)
@@ -36,9 +55,6 @@ SDK_VERSION=$(basename "$SDK_PATH" .sdk)
 SDK_VERSION=${SDK_VERSION#iPhoneOS}
 
 echo "==> Building against patched SDK $SDK_VERSION, deployment target $DEPLOYMENT_TARGET"
-test -d "$SDK_PATH/System/Library/PrivateFrameworks/Preferences.framework" \
-    || echo "warning: Preferences.framework stub not found in $SDK_PATH" >&2
-
 # A command-line assignment overrides the Makefile's TARGET.
 make package FINALPACKAGE=1 TARGET="iphone:clang:${SDK_VERSION}:${DEPLOYMENT_TARGET}" "$@"
 
