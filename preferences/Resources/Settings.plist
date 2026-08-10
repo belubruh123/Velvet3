@@ -24,7 +24,7 @@
 					systemIcon = "moon.stars";
 				}
 			);
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "appearance";
 			height = 120;
 		},
@@ -108,7 +108,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Don't display any icon";
 			default = 0;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = appIconHidden;
 			label = "Hide App Icon";
 			systemIcon = "square.slash";
@@ -118,7 +118,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Display app icon as a circle";
 			default = 0;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = appIconCornerRadiusCircle;
 			label = "Round App Icon";
 			systemIcon = "circle.square";
@@ -133,7 +133,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Custom background corner radius";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = cornerRadiusEnabled;
 			label = "Corner Radius";
 			systemIcon = "rectangle.roundedtop";
@@ -141,7 +141,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = cornerRadiusCustom;
 			min = 0;
 			max = 60;
@@ -157,7 +157,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Don't dim notifications in a stack";
 			default = 0;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = stackDimmingViewHidden;
 			label = "No Stack Dimming";
 			systemIcon = "rectangle.stack";

@@ -5,11 +5,11 @@
 
 // One directory, so everything the user might need to touch is in one place in Filza.
 static NSString *const kVLTPrefsDir  = @"/var/mobile/Library/Preferences";
-static NSString *const kVLTDisabled  = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.disabled";
-static NSString *const kVLTCounter   = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.launchcount";
-static NSString *const kVLTReconFlag = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.recon";
-static NSString *const kVLTReconSafeFlag = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe";
-static NSString *const kVLTReconOut  = @"/var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt";
+static NSString *const kVLTDisabled  = @"/var/mobile/Library/Preferences/com.belubruh123.velvet3.disabled";
+static NSString *const kVLTCounter   = @"/var/mobile/Library/Preferences/com.belubruh123.velvet3.launchcount";
+static NSString *const kVLTReconFlag = @"/var/mobile/Library/Preferences/com.belubruh123.velvet3.recon";
+static NSString *const kVLTReconSafeFlag = @"/var/mobile/Library/Preferences/com.belubruh123.velvet3.reconsafe";
+static NSString *const kVLTReconOut  = @"/var/mobile/Library/Preferences/com.belubruh123.velvet3.recon.txt";
 
 // Three consecutive loads that never reached the "SpringBoard survived" mark.
 static const int kVLTMaxConsecutiveLaunches = 3;
@@ -23,7 +23,7 @@ static const unsigned long long kVLTReconMaxBytes = 4 * 1024 * 1024;
 static os_log_t VLTLogHandle(void) {
     static os_log_t log;
     static dispatch_once_t once;
-    dispatch_once(&once, ^{ log = os_log_create("com.tallplay.velvet3", "tweak"); });
+    dispatch_once(&once, ^{ log = os_log_create("com.belubruh123.velvet3", "tweak"); });
     return log;
 }
 
@@ -230,7 +230,7 @@ static void VLTReconAppend(NSString *text) {
 
     static dispatch_queue_t queue;
     static dispatch_once_t once;
-    dispatch_once(&once, ^{ queue = dispatch_queue_create("com.tallplay.velvet3.recon", DISPATCH_QUEUE_SERIAL); });
+    dispatch_once(&once, ^{ queue = dispatch_queue_create("com.belubruh123.velvet3.recon", DISPATCH_QUEUE_SERIAL); });
 
     dispatch_async(queue, ^{
         NSFileManager *fm = NSFileManager.defaultManager;

@@ -57,7 +57,7 @@ void VLTApplyCorners(CALayer *layer, CGFloat radius, BOOL continuous);
 
 #pragma mark - Logging
 
-/// os_log under subsystem "com.tallplay.velvet3". Read with the `oslog` tool on
+/// os_log under subsystem "com.belubruh123.velvet3". Read with the `oslog` tool on
 /// device, or Console.app over USB.
 void VLTLog(NSString *format, ...) NS_FORMAT_FUNCTION(1, 2);
 
@@ -74,16 +74,16 @@ void VLTArmWatchdogReset(void);
 #pragma mark - Recon (read-only introspection)
 
 /// Recon writes a dump of the real class names, ivars and view tree to
-/// /var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt so we can see what
+/// /var/mobile/Library/Preferences/com.belubruh123.velvet3.recon.txt so we can see what
 /// iOS 18 actually calls things. Enabled by creating the flag file
-/// /var/mobile/Library/Preferences/com.tallplay.velvet3.recon (Filza: New > File).
+/// /var/mobile/Library/Preferences/com.belubruh123.velvet3.recon (Filza: New > File).
 BOOL VLTReconEnabled(void);
 
 /// Observation only: dump what the runtime has, then install NO hooks at all. This is
 /// the zero-risk first install on a new iOS version — it answers "did the dylib even get
 /// injected?" and "what are these classes called now?" without a single method being
 /// swizzled. Enabled by the flag file
-/// /var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe
+/// /var/mobile/Library/Preferences/com.belubruh123.velvet3.reconsafe
 BOOL VLTReconSafeMode(void);
 
 /// Class chain, every ivar (name + type + runtime class of the current value) and

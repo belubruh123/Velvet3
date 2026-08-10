@@ -217,7 +217,7 @@ python3 tools/check-slices.py packages/*.deb
 A tweak ships as a Debian package. `control` is the metadata:
 
 ```
-Package: com.tallplay.velvet3          # unique id; the thing dpkg tracks
+Package: com.belubruh123.velvet3          # unique id; the thing dpkg tracks
 Architecture: iphoneos-arm64           # rootless
 Depends: firmware (>= 15.0), ellekit | mobilesubstrate, preferenceloader
 Conflicts: com.noisyflake.velvet2      # cannot coexist — both hook the same classes
@@ -229,7 +229,7 @@ PreferenceLoader entry gets to `/var/jb/Library/PreferenceLoader/Preferences/`.
 
 Settings panes are a separate bundle (`preferences/`), loaded into the **Settings app**,
 not SpringBoard. They talk to the tweak by writing `NSUserDefaults` and posting a Darwin
-notification (`com.tallplay.velvet3/preferenceUpdate`) that the tweak listens for — a
+notification (`com.belubruh123.velvet3/preferenceUpdate`) that the tweak listens for — a
 cross-process signal, since Settings and SpringBoard are different processes.
 
 Build:
@@ -246,7 +246,7 @@ make package FINALPACKAGE=1      # FINALPACKAGE strips debug and drops the +debu
 exception type and the top of the thread that raised. `NSUnknownKeyException` names the
 key it could not find — which is exactly the ivar Apple renamed.
 
-**Logging.** `VLTLog()` writes to `os_log` under subsystem `com.tallplay.velvet3`. Read it
+**Logging.** `VLTLog()` writes to `os_log` under subsystem `com.belubruh123.velvet3`. Read it
 with the `oslog` package on device, or Console.app over USB.
 
 **Safe mode is information.** It means your tweak raised, twice. Get the crash log before
@@ -254,7 +254,7 @@ you change anything.
 
 **Better: do not rely on recovery.** Velvet 3 has two mechanisms in `VLTShouldLoad()`:
 
-- a **kill switch** — if `/var/mobile/Library/Preferences/com.tallplay.velvet3.disabled`
+- a **kill switch** — if `/var/mobile/Library/Preferences/com.belubruh123.velvet3.disabled`
   exists, the tweak does not install any hooks. Create it in Filza to go inert without
   uninstalling.
 - a **crash watchdog** — a counter is bumped on every load and reset only after

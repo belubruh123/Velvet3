@@ -77,8 +77,8 @@ Filza** → **Install**. (Make sure port 8000 is open in the firewall.)
 Or, if you have SSH working, from your own computer:
 
 ```bash
-scp com.tallplay.velvet3_3.0.0_iphoneos-arm64.deb root@192.168.1.42:/var/mobile/
-ssh root@192.168.1.42 'dpkg -i /var/mobile/com.tallplay.velvet3_3.0.0_iphoneos-arm64.deb && sbreload'
+scp com.belubruh123.velvet3_3.2.0_iphoneos-arm64.deb root@192.168.1.42:/var/mobile/
+ssh root@192.168.1.42 'dpkg -i /var/mobile/com.belubruh123.velvet3_3.2.0_iphoneos-arm64.deb && sbreload'
 ```
 
 Installing Velvet 3 automatically removes Velvet 2 (`Conflicts`/`Replaces`); they hook the
@@ -98,7 +98,7 @@ file. There are two levels, and **you want the first one for your first install.
 ### 3a. Recon-safe — observation only, no hooks (do this first)
 
 ```bash
-touch /var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe
+touch /var/mobile/Library/Preferences/com.belubruh123.velvet3.reconsafe
 ```
 
 In this mode the tweak dumps everything the ObjC runtime can tell it and then **returns
@@ -114,7 +114,7 @@ This is the mode to install first on any new iOS version.
 ### 3b. Full recon — hooks installed, deep dumps
 
 ```bash
-touch /var/mobile/Library/Preferences/com.tallplay.velvet3.recon
+touch /var/mobile/Library/Preferences/com.belubruh123.velvet3.recon
 ```
 
 Adds live ivar/property dumps and the view tree, which requires the hooks to be active.
@@ -128,13 +128,13 @@ with an icon), let a couple stack up, and open the Focus summary if you use one.
 **Read the results:**
 
 ```
-/var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt
+/var/mobile/Library/Preferences/com.belubruh123.velvet3.recon.txt
 ```
 
 Open it in Filza, or pull it off:
 
 ```bash
-scp root@192.168.1.42:/var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt .
+scp root@192.168.1.42:/var/mobile/Library/Preferences/com.belubruh123.velvet3.recon.txt .
 ```
 
 You get four things:
@@ -165,7 +165,7 @@ Look for `Exception Type` and the exception name. `NSUnknownKeyException` will n
 key it could not find — that names the ivar Apple renamed, which is exactly what needs a
 new candidate in `VLTIvarAny(...)`.
 
-Tweak logging goes to `os_log` under subsystem `com.tallplay.velvet3`:
+Tweak logging goes to `os_log` under subsystem `com.belubruh123.velvet3`:
 
 ```bash
 oslog | grep velvet3        # the `oslog` package, from a jailbreak repo
@@ -185,7 +185,7 @@ oslog | grep velvet3        # the `oslog` package, from a jailbreak repo
 2. **Kill switch.** From safe mode, in Filza, create:
 
    ```
-   /var/mobile/Library/Preferences/com.tallplay.velvet3.disabled
+   /var/mobile/Library/Preferences/com.belubruh123.velvet3.disabled
    ```
 
    Respring. The tweak loads but installs no hooks. Delete the file to re-enable.
@@ -193,7 +193,7 @@ oslog | grep velvet3        # the `oslog` package, from a jailbreak repo
 3. **Uninstall.** Safe mode → Sileo → Velvet 3 → Remove → Respring. Or over SSH:
 
    ```bash
-   dpkg -r com.tallplay.velvet3 && sbreload
+   dpkg -r com.belubruh123.velvet3 && sbreload
    ```
 
 **Test the kill switch deliberately, before you need it.** Create the file, respring,
@@ -214,9 +214,9 @@ dyld's slice-selection rules, and I could not find an authoritative answer eithe
 
 So test it, with the zero-risk mode from [§3a](#3a-recon-safe--observation-only-no-hooks-do-this-first):
 
-1. `touch /var/mobile/Library/Preferences/com.tallplay.velvet3.reconsafe`
+1. `touch /var/mobile/Library/Preferences/com.belubruh123.velvet3.reconsafe`
 2. Install the .deb, respring.
-3. Look for `/var/mobile/Library/Preferences/com.tallplay.velvet3.recon.txt`.
+3. Look for `/var/mobile/Library/Preferences/com.belubruh123.velvet3.recon.txt`.
 
 - **File appears** → the dylib was injected. arm64 works, and the Linux box can drive the
   whole development loop.

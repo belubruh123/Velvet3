@@ -8,7 +8,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Use a custom date color";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = dateEnabled;
 			label = "Enable Date";
 			systemIcon = "power";
@@ -38,7 +38,7 @@
 					systemIcon = "humidity.fill";
 				},
 			);
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "dateType";
 			height = 130;
 			require = "dateEnabled";
@@ -51,7 +51,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = dateIconAlpha;
 			min = 0;
 			max = 100;
@@ -62,7 +62,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "dateColor";
 			label = "Color";
@@ -72,7 +72,7 @@
 		{
 			cell = PSLinkListCell;
 			cellClass = "Velvet3LinkCell";
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "dateGradientDirection";
 			detail = PSListItemsController;
 			label = "Gradient Direction";
@@ -83,7 +83,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "dateGradient1";
 			label = "Color 1";
@@ -92,7 +92,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "dateGradient2";
 			label = "Color 2";

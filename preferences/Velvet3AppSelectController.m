@@ -24,7 +24,7 @@
 
 				[specifier setProperty:app.applicationIdentifier forKey:@"key"];
 				[specifier setProperty:app.localizedName forKey:@"label"];
-				[specifier setProperty:@"com.tallplay.velvet3" forKey:@"defaults"];
+				[specifier setProperty:@"com.belubruh123.velvet3" forKey:@"defaults"];
 				[specifier setProperty:@"1" forKey:@"isController"];
 				specifier.detailControllerClass = NSClassFromString(@"Velvet3SettingsController");
 
@@ -52,9 +52,9 @@
 										cell:PSLinkCell
 										edit:Nil];
 
-		[specifier setProperty:@"com.tallplay.velvetFocus" forKey:@"key"];
+		[specifier setProperty:@"com.belubruh123.velvetFocus" forKey:@"key"];
 		[specifier setProperty:@"Focus" forKey:@"label"];
-		[specifier setProperty:@"com.tallplay.velvet3" forKey:@"defaults"];
+		[specifier setProperty:@"com.belubruh123.velvet3" forKey:@"defaults"];
 		[specifier setProperty:@"1" forKey:@"isController"];
 		specifier.detailControllerClass = NSClassFromString(@"Velvet3SettingsController");
 

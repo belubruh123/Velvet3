@@ -5,7 +5,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Requires a Respring";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = enabled;
 			label = "Enable Tweak";
 			systemIcon = "power";

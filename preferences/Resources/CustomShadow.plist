@@ -8,7 +8,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Show a custom glow effect";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = shadowEnabled;
 			label = "Enable Glow";
 			systemIcon = "power";
@@ -16,7 +16,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = shadowWidth;
 			min = 1;
 			max = 10;
@@ -45,7 +45,7 @@
 					systemIcon = "eyedropper";
 				}
 			);
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "shadowType";
 			height = 130;
 			require = "shadowEnabled";
@@ -58,7 +58,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = shadowIconAlpha;
 			min = 0;
 			max = 100;
@@ -69,7 +69,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "shadowColor";
 			label = "Color";

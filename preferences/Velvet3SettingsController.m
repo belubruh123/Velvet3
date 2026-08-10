@@ -8,7 +8,7 @@
 
 		NSMutableArray *mutableSpecifiers = [_specifiers mutableCopy];
 
-		if ([self.identifier isEqual:@"com.tallplay.velvetFocus"]) {
+		if ([self.identifier isEqual:@"com.belubruh123.velvetFocus"]) {
 			for (PSSpecifier *specifier in [mutableSpecifiers reverseObjectEnumerator]) {
 				NSString *key = specifier.properties[@"key"];
 				if ([key isEqual:@"Date"] || [key isEqual:@"appIconCornerRadiusCircle"]) {

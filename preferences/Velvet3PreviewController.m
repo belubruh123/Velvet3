@@ -69,7 +69,7 @@
 	[self.preview updatePreview];
 
 	// This wouldn't usually be necessary, but I don't want to write the update string into every Specifier in the plist
-	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (CFStringRef)@"com.tallplay.velvet3/preferenceUpdate", NULL, NULL, YES);
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (CFStringRef)@"com.belubruh123.velvet3/preferenceUpdate", NULL, NULL, YES);
 
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void){
 		[self reloadSpecifiers];

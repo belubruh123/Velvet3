@@ -8,7 +8,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Use a custom title color";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = titleEnabled;
 			label = "Enable Title";
 			systemIcon = "power";
@@ -38,7 +38,7 @@
 					systemIcon = "humidity.fill";
 				},
 			);
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "titleType";
 			height = 130;
 			require = "titleEnabled";
@@ -51,7 +51,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = titleIconAlpha;
 			min = 0;
 			max = 100;
@@ -62,7 +62,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "titleColor";
 			label = "Color";
@@ -72,7 +72,7 @@
 		{
 			cell = PSLinkListCell;
 			cellClass = "Velvet3LinkCell";
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "titleGradientDirection";
 			detail = PSListItemsController;
 			label = "Gradient Direction";
@@ -83,7 +83,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "titleGradient1";
 			label = "Color 1";
@@ -92,7 +92,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "titleGradient2";
 			label = "Color 2";

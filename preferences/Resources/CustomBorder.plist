@@ -8,7 +8,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Show a custom border";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = borderEnabled;
 			label = "Enable Border";
 			systemIcon = "power";
@@ -16,7 +16,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = borderWidth;
 			min = 1;
 			max = 5;
@@ -50,7 +50,7 @@
 					systemIcon = "humidity.fill";
 				},
 			);
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "borderType";
 			height = 130;
 			require = "borderEnabled";
@@ -63,7 +63,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = borderIconAlpha;
 			min = 0;
 			max = 100;
@@ -74,7 +74,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "borderColor";
 			label = "Color";
@@ -84,7 +84,7 @@
 		{
 			cell = PSLinkListCell;
 			cellClass = "Velvet3LinkCell";
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "borderGradientDirection";
 			detail = PSListItemsController;
 			label = "Gradient Direction";
@@ -95,7 +95,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "borderGradient1";
 			label = "Color 1";
@@ -104,7 +104,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "borderGradient2";
 			label = "Color 2";

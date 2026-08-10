@@ -2,8 +2,8 @@
 
 Velvet3PrefsManager *prefsManager;
 
-static NSString *const kVelvetUpdateNotification = @"com.tallplay.velvet3/updateStyle";
-static NSString *const kVelvetFocusIdentifier    = @"com.tallplay.velvetFocus";
+static NSString *const kVelvetUpdateNotification = @"com.belubruh123.velvet3/updateStyle";
+static NSString *const kVelvetFocusIdentifier    = @"com.belubruh123.velvetFocus";
 
 #pragma mark - Private-state accessors
 //

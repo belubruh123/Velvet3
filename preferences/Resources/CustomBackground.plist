@@ -8,7 +8,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Use a custom background color";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = backgroundEnabled;
 			label = "Enable Background";
 			systemIcon = "power";
@@ -38,7 +38,7 @@
 					systemIcon = "humidity.fill";
 				},
 			);
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "backgroundType";
 			height = 130;
 			require = "backgroundEnabled";
@@ -51,7 +51,7 @@
 		{
 			cell = PSSliderCell;
 			cellClass = Velvet3Slider;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = backgroundIconAlpha;
 			min = 0;
 			max = 100;
@@ -62,7 +62,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "backgroundColor";
 			label = "Color";
@@ -72,7 +72,7 @@
 		{
 			cell = PSLinkListCell;
 			cellClass = "Velvet3LinkCell";
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = "backgroundGradientDirection";
 			detail = PSListItemsController;
 			label = "Gradient Direction";
@@ -83,7 +83,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "backgroundGradient1";
 			label = "Color 1";
@@ -92,7 +92,7 @@
 		},
 		{
 			cell = PSLinkCell;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			cellClass = Velvet3ColorPicker;
 			key = "backgroundGradient2";
 			label = "Color 2";
@@ -109,7 +109,7 @@
 			cellClass = Velvet3Switch;
 			cellSubtitleText = "Removes the background blur";
 			default = 1;
-			defaults = "com.tallplay.velvet3";
+			defaults = "com.belubruh123.velvet3";
 			key = backgroundBlurHidden;
 			label = "Hide Background Blur";
 			systemIcon = "square.dashed";

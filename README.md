@@ -56,7 +56,7 @@ cannot happen:
   never gets hooked.
 - A **crash watchdog** in `%ctor` notices if SpringBoard died with Velvet loaded and
   disables the tweak, so a bad build costs one respring instead of an evening.
-- A **kill switch**: create `/var/mobile/Library/Preferences/com.tallplay.velvet3.disabled`
+- A **kill switch**: create `/var/mobile/Library/Preferences/com.belubruh123.velvet3.disabled`
   (Filza works fine) and Velvet stays inert on the next respring.
 
 If you ever need to dig into a new iOS version, there is a read-only

@@ -32,7 +32,7 @@
 -(void)setupFooterVersion {
 	NSString *firstLine = [NSString stringWithFormat:@"Velvet %@", PACKAGE_VERSION];
 
-	NSMutableAttributedString *fullFooter = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\nby tallplay \u00b7 after Velvet 2 by NoisyFlake", firstLine]];
+	NSMutableAttributedString *fullFooter = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\nby BeluBruh123 \u00b7 after Velvet 2 by NoisyFlake", firstLine]];
 
 	[fullFooter beginEditing];
 	[fullFooter addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:18] range:NSMakeRange(0, [firstLine length])];
@@ -48,10 +48,10 @@
 }
 
 -(void)resetSettings {
-	[[NSUserDefaults standardUserDefaults] removePersistentDomainForName:@"com.tallplay.velvet3"];
+	[[NSUserDefaults standardUserDefaults] removePersistentDomainForName:@"com.belubruh123.velvet3"];
 	[self reload];
 
-	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (CFStringRef)@"com.tallplay.velvet3/preferenceUpdate", NULL, NULL, YES);
+	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (CFStringRef)@"com.belubruh123.velvet3/preferenceUpdate", NULL, NULL, YES);
 }
 
 -(void)github {
