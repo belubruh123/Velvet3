@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 
+#import "../src/VLTRuntime.h"
 #import "Log.h"
 #import "MaterialKit.h"
 #import "PlatterKit.h"

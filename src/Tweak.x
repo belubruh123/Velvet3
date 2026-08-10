@@ -2,189 +2,356 @@
 
 Velvet2PrefsManager *prefsManager;
 
+static NSString *const kVelvetUpdateNotification = @"com.noisyflake.velvet2/updateStyle";
+static NSString *const kVelvetFocusIdentifier    = @"com.noisyflake.velvetFocus";
+
+#pragma mark - Private-state accessors
+//
+// Each of these may return nil. Reaching for private state with -valueForKey: or a bare
+// @property call raises as soon as Apple moves something, and an exception in SpringBoard
+// means safe mode rather than a log line.
+
+/// The blur behind a notification. `backgroundMaterialView` is the iOS 15/16 property; if
+/// it is gone, look for the material view in the tree instead.
+static UIView *VelvetMaterialViewIn(UIView *view) {
+    UIView *material = VLTSafePerform(view, @selector(backgroundMaterialView));
+    if (material) return material;
+    return VLTDescendantOfClass(view, @"MTMaterialView");
+}
+
+static UIView *VelvetContentViewIn(UIView *shortLookView) {
+    UIView *content = VLTIvarAny(shortLookView, @[@"notificationContentView", @"contentView"]);
+    if (content) return content;
+    return VLTDescendantOfClass(shortLookView, @"NCNotificationSeamlessContentView");
+}
+
+/// The notification's section identifier — the per-app settings key. nil falls back to
+/// the global settings, which is a reasonable degradation.
+static NSString *VelvetIdentifierFor(id controller) {
+    id request = VLTSafePerform(controller, @selector(notificationRequest));
+    id identifier = VLTSafePerform(request, @selector(sectionIdentifier));
+    return [identifier isKindOfClass:NSString.class] ? identifier : nil;
+}
+
+/// The view holding the app icon. iOS 15/16 exposed it as `badgedIconView.iconView`; on
+/// iOS 18 the icon is a plain UIImageView inside NCBadgedIconView.
+static UIView *VelvetAppIconViewIn(id contentView) {
+    UIView *badgedIconView = VLTIvar(contentView, @"badgedIconView");
+    if (!badgedIconView) return nil;
+
+    id iconView = VLTSafePerform(badgedIconView, @selector(iconView));
+    if ([iconView isKindOfClass:UIView.class]) return (UIView *)iconView;
+
+    return VLTDescendantOfClass(badgedIconView, @"UIImageView");
+}
+
+/// The app icon image, which every "icon" colour type extracts its colour from.
+///
+/// iOS 15/16 provided this as `prominentIcon` / `subordinateIcon` on the content view.
+/// **Both are gone in iOS 18** — NCNotificationSeamlessContentView has no icon property
+/// any more. That single removal is why border, title, message and date colouring all did
+/// nothing on iOS 18 while corner radius kept working: with no icon there is no colour to
+/// extract, and every one of those features defaults to type "icon".
+static UIImage *VelvetAppIconIn(id contentView) {
+    id icon = VLTSafePerform(contentView, @selector(prominentIcon));
+    if (![icon isKindOfClass:UIImage.class]) {
+        icon = VLTSafePerform(contentView, @selector(subordinateIcon));
+    }
+    if ([icon isKindOfClass:UIImage.class]) return (UIImage *)icon;
+
+    UIView *iconView = VelvetAppIconViewIn(contentView);
+    if ([iconView isKindOfClass:UIImageView.class]) {
+        return ((UIImageView *)iconView).image;
+    }
+    return nil;
+}
+
+/// iOS 15 kept this on the controller's content view; iOS 16 moved it onto the short look
+/// view and renamed it. Try both rather than branching on the version, so a third
+/// spelling later simply yields nil instead of an exception.
+static UIView *VelvetStackDimmingViewFor(id controller, UIView *shortLookView) {
+    UIView *dimming = VLTIvar(shortLookView, @"stackDimmingOverlayView");
+    if (dimming) return dimming;
+
+    UIView *controllerView = VLTIvar(controller, @"contentSizeManagingView");
+    return VLTIvar(controllerView, @"stackDimmingView");
+}
+
+/// The two CALayers the accent line is drawn into, created defensively so the colorizer
+/// never indexes into an empty sublayer array.
+static void VelvetPrepareLayers(UIView *view) {
+    if (!view) return;
+    while (view.layer.sublayers.count < 2) {
+        [view.layer insertSublayer:[CALayer layer] atIndex:0];
+    }
+}
+
+static CGFloat VelvetCornerRadiusFor(NSString *identifier, CGFloat containerHeight) {
+    CGFloat defaultRadius = SYSTEM_VERSION_LESS_THAN(@"16.0") ? 19 : 23.5;
+    BOOL custom = [[prefsManager settingForKey:@"cornerRadiusEnabled" withIdentifier:identifier] boolValue];
+    CGFloat radius = custom
+        ? [[prefsManager settingForKey:@"cornerRadiusCustom" withIdentifier:identifier] floatValue]
+        : defaultRadius;
+    return MIN(radius, containerHeight / 2);
+}
+
+#pragma mark - Banner notifications
+
+%group ShortLook
+
 %hook NCNotificationShortLookViewController
-%property (nonatomic,retain) UIView *velvetView;
+%property (nonatomic, retain) UIView *velvetView;
 
 -(void)viewDidLoad {
     %orig;
 
-    NCNotificationShortLookView *view = (NCNotificationShortLookView *)self.viewForPreview;
+    UIView *view = VLTSafePerform(self, @selector(viewForPreview));
+    if (!view) return;
+
+    UIView *material = VelvetMaterialViewIn(view);
+    UIView *host = material.superview ?: view;
 
     UIView *velvetView = [UIView new];
-    [velvetView.layer insertSublayer:[CALayer layer] atIndex:0];
-    [velvetView.layer insertSublayer:[CALayer layer] atIndex:0];
-    [view.backgroundMaterialView.superview insertSubview:velvetView atIndex:1];
+    VelvetPrepareLayers(velvetView);
+    velvetView.clipsToBounds = YES;
+
+    // Previously hardcoded index 1, assuming the blur sits at index 0. Place ourselves
+    // directly in front of whatever the blur actually is, falling back to the very back
+    // when there is no blur to anchor to.
+    NSUInteger materialIndex = material ? [host.subviews indexOfObject:material] : NSNotFound;
+    NSUInteger insertIndex = (materialIndex == NSNotFound) ? 0 : materialIndex + 1;
+    [host insertSubview:velvetView atIndex:MIN(insertIndex, host.subviews.count)];
 
     self.velvetView = velvetView;
-    self.velvetView.clipsToBounds = YES;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(velvetUpdateStyle) name:@"com.noisyflake.velvet2/updateStyle" object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(velvetUpdateStyle)
+                                               name:kVelvetUpdateNotification
+                                             object:nil];
 }
 
 -(void)viewDidLayoutSubviews {
     %orig;
 
-    if (self.viewForPreview.frame.size.width == 0) return;
+    UIView *view = VLTSafePerform(self, @selector(viewForPreview));
+    if (view.frame.size.width == 0) return;
 
     [self velvetUpdateStyle];
 }
 
 -(void)viewDidAppear:(BOOL)arg1 {
     %orig;
-    
-    Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:self.notificationRequest.sectionIdentifier];
-    NCNotificationShortLookView *view                       = (NCNotificationShortLookView *)self.viewForPreview;
-    NCNotificationSeamlessContentView *contentView          = [view valueForKey:@"notificationContentView"];
-    UIImage *appIcon                                        = contentView.prominentIcon ?: contentView.subordinateIcon;
-    NCBadgedIconView *badgedIconView                        = [contentView valueForKey:@"badgedIconView"];
-    UIView *appIconView                                     = badgedIconView.iconView;
 
-    colorizer.appIcon = appIcon;
+    UIView *view = VLTSafePerform(self, @selector(viewForPreview));
+    UIView *contentView = VelvetContentViewIn(view);
+    if (!contentView) return;
 
-    // For some reason, dateLabel and appIconView isn't fully initialized yet after viewDidLayoutSubviews
-    [colorizer colorDate:[contentView valueForKey:@"dateLabel"]];
-    [colorizer setAppIconCornerRadius:appIconView];
+    Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:VelvetIdentifierFor(self)];
+    colorizer.appIcon = VelvetAppIconIn(contentView);
+
+    // dateLabel and the icon view are not fully built until after layout, hence doing
+    // these two here rather than in velvetUpdateStyle.
+    [colorizer colorDate:VLTIvar(contentView, @"dateLabel")];
+    [colorizer setAppIconCornerRadius:VelvetAppIconViewIn(contentView)];
 }
 
 %new
 -(void)velvetUpdateStyle {
-    NSString *identifier = self.notificationRequest.sectionIdentifier;
+    UIView *view = VLTSafePerform(self, @selector(viewForPreview));
+    if (!view) return;
 
-    // Initialize content variables
-    NCNotificationShortLookView *view                       = (NCNotificationShortLookView *)self.viewForPreview;
-    MTMaterialView *materialView                            = view.backgroundMaterialView;
-    NCNotificationViewControllerView *controllerView        = [self valueForKey:@"contentSizeManagingView"];
-    UIView *stackDimmingView                                = SYSTEM_VERSION_LESS_THAN(@"16.0") ? [controllerView valueForKey:@"stackDimmingView"] : [view valueForKey:@"stackDimmingOverlayView"];
-    NCNotificationSeamlessContentView *contentView          = [view valueForKey:@"notificationContentView"];
-    UILabel *title                                          = [contentView valueForKey:@"primaryTextLabel"];
-    UILabel *message                                        = [contentView valueForKey:@"secondaryTextElement"];
-    UILabel *dateLabel                                      = [contentView valueForKey:@"dateLabel"];
-    NCBadgedIconView *badgedIconView                        = [contentView valueForKey:@"badgedIconView"];
-    UIView *appIconView                                     = badgedIconView.iconView;
-    UIImage *appIcon                                        = contentView.prominentIcon ?: contentView.subordinateIcon;
+    NSString *identifier = VelvetIdentifierFor(self);
+    UIView *material     = VelvetMaterialViewIn(view);
+    UIView *contentView  = VelvetContentViewIn(view);
+    UIView *stackDimming = VelvetStackDimmingViewFor(self, view);
 
-    self.velvetView.frame = materialView.frame;
+    // Without a blur there is no frame to match and nothing to sit behind, so there is no
+    // meaningful styling to do.
+    if (!material) return;
+
+    VelvetPrepareLayers(self.velvetView);
+    self.velvetView.frame = material.frame;
 
     Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:identifier];
-    colorizer.appIcon = appIcon;
+    colorizer.appIcon = VelvetAppIconIn(contentView);
 
-    CGFloat defaultCornerRadius = SYSTEM_VERSION_LESS_THAN(@"16.0") ? 19 : 23.5;
-    CGFloat cornerRadius = [[prefsManager settingForKey:@"cornerRadiusEnabled" withIdentifier:identifier] boolValue] ? [[prefsManager settingForKey:@"cornerRadiusCustom" withIdentifier:identifier] floatValue] : defaultCornerRadius;
-	materialView.layer.continuousCorners = cornerRadius < materialView.frame.size.height / 2;
-	materialView.layer.cornerRadius = MIN(cornerRadius, materialView.frame.size.height / 2);
-    self.velvetView.layer.continuousCorners = cornerRadius < self.velvetView.frame.size.height / 2;
-	self.velvetView.layer.cornerRadius = MIN(cornerRadius, self.velvetView.frame.size.height / 2);
+    CGFloat radius = VelvetCornerRadiusFor(identifier, material.frame.size.height);
+    BOOL continuous = radius < material.frame.size.height / 2;
 
-    view.layer.cornerRadius = MIN(cornerRadius, materialView.frame.size.height / 2);
-    materialView.superview.layer.cornerRadius = MIN(cornerRadius, materialView.frame.size.height / 2);
-    stackDimmingView.layer.cornerRadius = MIN(cornerRadius, materialView.frame.size.height / 2);
+    VLTApplyCorners(material.layer, radius, continuous);
+    VLTApplyCorners(self.velvetView.layer, radius, radius < self.velvetView.frame.size.height / 2);
+    VLTApplyCorners(view.layer, radius, continuous);
+    VLTApplyCorners(material.superview.layer, radius, continuous);
+    VLTApplyCorners(stackDimming.layer, radius, continuous);
 
-    stackDimmingView.hidden = [[prefsManager settingForKey:@"stackDimmingViewHidden" withIdentifier:identifier] boolValue];
-    
-    [colorizer setAppIconCornerRadius:appIconView];
+    stackDimming.hidden = [[prefsManager settingForKey:@"stackDimmingViewHidden" withIdentifier:identifier] boolValue];
+
+    [colorizer setAppIconCornerRadius:VelvetAppIconViewIn(contentView)];
     [colorizer colorBackground:self.velvetView];
-    [colorizer setBackgroundBlur:materialView];
+    [colorizer setBackgroundBlur:material];
     [colorizer colorBorder:self.velvetView];
-    [colorizer colorShadow:materialView];
-    [colorizer colorLine:self.velvetView inFrame:materialView.frame];
-    [colorizer colorTitle:title];
-    [colorizer colorMessage:message];
-    [colorizer colorDate:dateLabel];
+    [colorizer colorShadow:material];
+    [colorizer colorLine:self.velvetView inFrame:material.frame];
+    [colorizer colorTitle:VLTIvar(contentView, @"primaryTextLabel")];
+    [colorizer colorMessage:VLTIvar(contentView, @"secondaryTextElement")];
+    [colorizer colorDate:VLTIvar(contentView, @"dateLabel")];
     [colorizer setAppearance:self.view];
 }
+
 %end
+
+%end // group ShortLook
+
+#pragma mark - Focus summary platter
+
+%group SummaryPlatter
 
 %hook NCNotificationSummaryPlatterView
-%property (nonatomic,retain) UIView *velvetView;
+%property (nonatomic, retain) UIView *velvetView;
+%property (nonatomic, assign) BOOL velvetObserving;
 
 -(void)didMoveToWindow {
-    
+    %orig; // was omitted, silently dropping PLPlatterView's own behaviour
+
     if (!self.velvetView) {
         UIView *velvetView = [UIView new];
-        [velvetView.layer insertSublayer:[CALayer layer] atIndex:0];
-        [velvetView.layer insertSublayer:[CALayer layer] atIndex:0];
-        [self insertSubview:velvetView atIndex:1];
+        VelvetPrepareLayers(velvetView);
+        velvetView.clipsToBounds = YES;
+
+        UIView *material = VLTDescendantOfClass(self, @"MTMaterialView");
+        NSUInteger materialIndex = material ? [self.subviews indexOfObject:material] : NSNotFound;
+        NSUInteger insertIndex = (materialIndex == NSNotFound) ? 0 : materialIndex + 1;
+        [self insertSubview:velvetView atIndex:MIN(insertIndex, self.subviews.count)];
 
         self.velvetView = velvetView;
-        self.velvetView.clipsToBounds = YES;
     }
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(velvetUpdateStyle) name:@"com.noisyflake.velvet2/updateStyle" object:nil];
+    // didMoveToWindow fires on every re-parent; registering each time stacked up
+    // duplicate observers.
+    if (!self.velvetObserving) {
+        self.velvetObserving = YES;
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(velvetUpdateStyle)
+                                                   name:kVelvetUpdateNotification
+                                                 object:nil];
+    }
 }
+
 -(void)layoutSubviews {
     %orig;
-
     [self velvetUpdateStyle];
 }
 
 %new
 -(void)velvetUpdateStyle {
-    MTMaterialView *materialView                            = (MTMaterialView*)self.subviews[0];
-    NCNotificationSummaryContentView *contentView           = [self valueForKey:@"summaryContentView"];
-    UILabel *title                                          = [contentView valueForKey:@"summaryTitleLabel"];
-    UILabel *message                                        = [contentView valueForKey:@"summaryLabel"];
+    // Was self.subviews[0], an NSRangeException the moment the platter is laid out
+    // before its blur exists.
+    UIView *material = VLTDescendantOfClass(self, @"MTMaterialView");
+    if (!material) return;
 
-    Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:@"com.noisyflake.velvetFocus"];
+    UIView *contentView = VLTIvar(self, @"summaryContentView");
 
-    CGFloat defaultCornerRadius = SYSTEM_VERSION_LESS_THAN(@"16.0") ? 19 : 23.5;
-    CGFloat cornerRadius = [[prefsManager settingForKey:@"cornerRadiusEnabled" withIdentifier:@"com.noisyflake.velvetFocus"] boolValue] ? [[prefsManager settingForKey:@"cornerRadiusCustom" withIdentifier:@"com.noisyflake.velvetFocus"] floatValue] : defaultCornerRadius;
-    
-    if (materialView) {
-        self.velvetView.frame = materialView.frame;
-        materialView.layer.continuousCorners = cornerRadius < self.frame.size.height / 2;
-        materialView.layer.cornerRadius = MIN(cornerRadius, self.frame.size.height / 2);
-        self.velvetView.layer.continuousCorners = cornerRadius < self.velvetView.frame.size.height / 2;
-	    self.velvetView.layer.cornerRadius = MIN(cornerRadius, self.velvetView.frame.size.height / 2);
-    
-        [colorizer colorBackground:self.velvetView];
-        [colorizer colorBorder:self.velvetView];
-        [colorizer colorShadow:materialView];
-        [colorizer colorLine:self.velvetView inFrame:materialView.frame];
-        [colorizer colorTitle:title];
-        [colorizer colorMessage:message];
-        [colorizer setAppearance:self];
-    }
+    Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:kVelvetFocusIdentifier];
+
+    CGFloat radius = VelvetCornerRadiusFor(kVelvetFocusIdentifier, self.frame.size.height);
+
+    VelvetPrepareLayers(self.velvetView);
+    self.velvetView.frame = material.frame;
+
+    VLTApplyCorners(material.layer, radius, radius < self.frame.size.height / 2);
+    VLTApplyCorners(self.velvetView.layer, radius, radius < self.velvetView.frame.size.height / 2);
+
+    [colorizer colorBackground:self.velvetView];
+    [colorizer colorBorder:self.velvetView];
+    [colorizer colorShadow:material];
+    [colorizer colorLine:self.velvetView inFrame:material.frame];
+    [colorizer colorTitle:VLTIvar(contentView, @"summaryTitleLabel")];
+    [colorizer colorMessage:VLTIvar(contentView, @"summaryLabel")];
+    [colorizer setAppearance:self];
 }
+
 %end
 
+%end // group SummaryPlatter
+
+#pragma mark - Content view (app icon visibility)
+
+%group ContentView
+
 %hook NCNotificationSeamlessContentView
+%property (nonatomic, assign) BOOL velvetObserving;
+
 -(void)didMoveToWindow {
     %orig;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(velvetUpdateStyle) name:@"com.noisyflake.velvet2/updateStyle" object:nil];
+    if (!self.velvetObserving) {
+        self.velvetObserving = YES;
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(velvetUpdateStyle)
+                                                   name:kVelvetUpdateNotification
+                                                 object:nil];
+    }
 }
+
 -(void)layoutSubviews {
     %orig;
-
     [self velvetUpdateStyle];
 }
 
 %new
 -(void)velvetUpdateStyle {
-    NCNotificationShortLookViewController *controller = [self _viewControllerForAncestor];
-    Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:controller.notificationRequest.sectionIdentifier];
+    id controller = VLTSafePerform(self, @selector(_viewControllerForAncestor));
+    Velvet2Colorizer *colorizer = [[Velvet2Colorizer alloc] initWithIdentifier:VelvetIdentifierFor(controller)];
 
-    UILabel *title                                          = [self valueForKey:@"primaryTextLabel"];
-    UILabel *message                                        = [self valueForKey:@"secondaryTextElement"];
-    UILabel *footer                                         = [self valueForKey:@"footerTextLabel"];
-    NCBadgedIconView *badgedIconView                        = [self valueForKey:@"badgedIconView"];
-
-    [colorizer toggleAppIconVisibility:badgedIconView withTitle:title message:message footer:footer alwaysUpdate:YES];
+    [colorizer toggleAppIconVisibility:VLTIvar(self, @"badgedIconView")
+                             withTitle:VLTIvar(self, @"primaryTextLabel")
+                               message:VLTIvar(self, @"secondaryTextElement")
+                                footer:VLTIvar(self, @"footerTextLabel")
+                          alwaysUpdate:YES];
 }
+
 %end
 
-// Fix notifications in a stack having the wrong color because they were re-used
+%end // group ContentView
+
+#pragma mark - Stacked-notification recycling (iOS 15/16 only)
+
+// Blanking out UIKit's view recycling stops stacked notifications inheriting a recycled
+// neighbour's colour, but stubbing Apple's methods with no %orig is a blunt tool: it
+// leaks views, and on the notification list as rewritten in iOS 17 it is a crash
+// candidate. Keep it only where it is known to work — elsewhere velvetUpdateStyle runs on
+// every layout pass anyway.
+%group ListRecycleFix
 
 %hook NCNotificationListView
--(void)recycleVisibleViews{}
--(void)_recycleViewIfNecessary:(id)arg1{}
--(void)_recycleViewIfNecessary:(id)arg1 withDataSource:(id)arg2{}
+-(void)recycleVisibleViews {}
+-(void)_recycleViewIfNecessary:(id)arg1 {}
+-(void)_recycleViewIfNecessary:(id)arg1 withDataSource:(id)arg2 {}
 %end
 
-%ctor {
-    prefsManager = [NSClassFromString(@"Velvet2PrefsManager") sharedInstance];
+%end // group ListRecycleFix
 
-    if ([[prefsManager objectForKey:@"enabled"] boolValue]) {
-        %init;
+#pragma mark - Load
+
+%ctor {
+    @autoreleasepool {
+        prefsManager = [NSClassFromString(@"Velvet2PrefsManager") sharedInstance];
+
+        if (![[prefsManager objectForKey:@"enabled"] boolValue]) return;
+
+        // Hook only what this iOS version actually has, rather than handing a class that
+        // may be nil to the hooking engine.
+        if (NSClassFromString(@"NCNotificationShortLookViewController")) {
+            %init(ShortLook);
+        } else {
+            VLTLog(@"NCNotificationShortLookViewController missing — banner styling unavailable");
+        }
+
+        if (NSClassFromString(@"NCNotificationSummaryPlatterView")) %init(SummaryPlatter);
+        if (NSClassFromString(@"NCNotificationSeamlessContentView")) %init(ContentView);
+
+        if (SYSTEM_VERSION_LESS_THAN(@"17.0") && NSClassFromString(@"NCNotificationListView")) {
+            %init(ListRecycleFix);
+        }
     }
 }

@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "../../src/VLTRuntime.h"
 #import "Velvet2PrefsManager.h"
 
 @interface Velvet2Colorizer : NSObject

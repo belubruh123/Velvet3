@@ -91,6 +91,12 @@
 }
 
 - (void)colorLine:(UIView *)lineView inFrame:(CGRect)frame {
+    // The accent line is drawn into two CALayers the tweak inserts itself. If the view
+    // was rebuilt without them, indexing straight into sublayers is an NSRangeException.
+    CALayer *primaryLine = VLTSublayerAtIndex(lineView.layer, 0);
+    CALayer *secondaryLine = VLTSublayerAtIndex(lineView.layer, 1);
+    if (!primaryLine || !secondaryLine) return;
+
     NSString *position = [self.manager settingForKey:@"linePosition" withIdentifier:self.identifier];
     CGFloat size = [[self.manager settingForKey:@"lineWidth" withIdentifier:self.identifier] floatValue];
 
@@ -98,12 +104,12 @@
     CGFloat y = [position isEqual:@"bottom"] || [position isEqual:@"topBottom"] ? frame.size.height - size : 0;
     CGFloat width = [position isEqual:@"top"] || [position isEqual:@"bottom"] || [position isEqual:@"topBottom"] ? frame.size.width : size;
     CGFloat height = [position isEqual:@"left"] || [position isEqual:@"right"] || [position isEqual:@"leftRight"] ? frame.size.height : size;
-    lineView.layer.sublayers[0].frame = CGRectMake(x, y, width, height);
+    primaryLine.frame = CGRectMake(x, y, width, height);
 
     if ([position isEqual:@"topBottom"] || [position isEqual:@"leftRight"]) {
-        lineView.layer.sublayers[1].frame = CGRectMake(0, 0, width, height);
+        secondaryLine.frame = CGRectMake(0, 0, width, height);
     } else {
-        lineView.layer.sublayers[1].frame = CGRectZero;
+        secondaryLine.frame = CGRectZero;
     }
 
     UIColor *lineColor;
@@ -117,17 +123,22 @@
             lineColor = [self.manager colorForKey:@"lineColor" withIdentifier:self.identifier];
         } else if ([lineType isEqual:@"gradient"]) {
             NSArray *gradientColors = @[(id)[self.manager colorForKey:@"lineGradient1" withIdentifier:self.identifier].CGColor, (id)[self.manager colorForKey:@"lineGradient2" withIdentifier:self.identifier].CGColor];
-            lineColor = [UIColor colorFromGradient:gradientColors withDirection:[self.manager settingForKey:@"lineGradientDirection" withIdentifier:self.identifier] inFrame:lineView.layer.sublayers[0].frame flipY:YES];
+            lineColor = [UIColor colorFromGradient:gradientColors withDirection:[self.manager settingForKey:@"lineGradientDirection" withIdentifier:self.identifier] inFrame:primaryLine.frame flipY:YES];
         } else if ([lineType isEqual:@"icon"]) {
             lineColor = self.iconColor ? [self.iconColor colorWithAlphaComponent:[self.manager alphaValueForKey:@"lineIconAlpha" withIdentifier:self.identifier]] : nil;
         }
     }
 
-    lineView.layer.sublayers[0].backgroundColor = lineColor ? lineColor.CGColor : nil;
-    lineView.layer.sublayers[1].backgroundColor = lineColor ? lineColor.CGColor : nil;
+    primaryLine.backgroundColor = lineColor ? lineColor.CGColor : nil;
+    secondaryLine.backgroundColor = lineColor ? lineColor.CGColor : nil;
 }
 
 - (void)colorTitle:(UILabel*)title {
+    // Handed a private ivar: only a label can take a text colour. secondaryTextElement
+    // in particular is not declared as one. Anything else, or nil, and we do nothing
+    // rather than raise on an unknown selector.
+    if (![title respondsToSelector:@selector(setTextColor:)]) return;
+
     UIColor *titleColor;
 
     BOOL titleEnabled = [[self.manager settingForKey:@"titleEnabled" withIdentifier:self.identifier] boolValue];
@@ -150,6 +161,11 @@
 }
 
 - (void)colorMessage:(UILabel*)message {
+    // Handed a private ivar: only a label can take a text colour. secondaryTextElement
+    // in particular is not declared as one. Anything else, or nil, and we do nothing
+    // rather than raise on an unknown selector.
+    if (![message respondsToSelector:@selector(setTextColor:)]) return;
+
     UIColor *messageColor;
 
     BOOL messageEnabled = [[self.manager settingForKey:@"messageEnabled" withIdentifier:self.identifier] boolValue];
@@ -172,6 +188,11 @@
 }
 
 - (void)colorDate:(UILabel*)date {
+    // Handed a private ivar: only a label can take a text colour. secondaryTextElement
+    // in particular is not declared as one. Anything else, or nil, and we do nothing
+    // rather than raise on an unknown selector.
+    if (![date respondsToSelector:@selector(setTextColor:)]) return;
+
     UIColor *dateColor;
 
     BOOL dateEnabled = [[self.manager settingForKey:@"dateEnabled" withIdentifier:self.identifier] boolValue];
