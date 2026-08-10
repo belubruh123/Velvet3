@@ -1,11 +1,14 @@
 Package: com.tallplay.velvet3
 Name: Velvet 3
-Version: 3.0.0
+Version: 3.1.0
 Architecture: iphoneos-arm64
-Description: A fully customizable notification experience. iOS 17/18 fork of NoisyFlake's Velvet 2.
+Description: Restyle iOS notification banners — colours, corners, borders, shadows, accent lines and per-app rules. Built on Velvet 2 by NoisyFlake.
 Maintainer: tallplay
-Author: NoisyFlake (original), tallplay (iOS 18 fork)
+Author: tallplay
 Section: Tweaks
 Depends: firmware (>= 15.0), ellekit | mobilesubstrate, preferenceloader
 Conflicts: com.initwithframe.velvet, com.noisyflake.velvet2
 Replaces: com.noisyflake.velvet2
+Icon: file:///var/jb/Library/PreferenceBundles/Velvet3.bundle/PackageIcon.png
+Homepage: https://github.com/belubruh123/Velvet3
+Tag: compatible::ios15, compatible::ios16, compatible::ios17, compatible::ios18

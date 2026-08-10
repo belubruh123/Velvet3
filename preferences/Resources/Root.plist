@@ -48,20 +48,28 @@
 		},
 		{
 			cell = PSGroupCell;
-			label = "Developer";
+			label = "About";
+			footerText = "Velvet 3 is built on Velvet 2 by NoisyFlake, MIT licensed. If you got years of use out of the original, the coffee button is theirs.";
 		},
 		{
 			cell = PSButtonCell;
 			cellClass = Velvet3Button;
-			action = twitter;
-			label = "Follow on Twitter";
-			systemIcon = "person.crop.circle.badge.plus";
+			action = github;
+			label = "Velvet 3 on GitHub";
+			systemIcon = "chevron.left.forwardslash.chevron.right";
+		},
+		{
+			cell = PSButtonCell;
+			cellClass = Velvet3Button;
+			action = reportIssue;
+			label = "Report an Issue";
+			systemIcon = "exclamationmark.bubble";
 		},
 		{
 			cell = PSButtonCell;
 			cellClass = Velvet3Button;
 			action = paypal;
-			label = "Buy me a coffee";
+			label = "Buy NoisyFlake a Coffee";
 			systemIcon = "gift";
 		},
 

@@ -32,12 +32,12 @@
 -(void)setupFooterVersion {
 	NSString *firstLine = [NSString stringWithFormat:@"Velvet %@", PACKAGE_VERSION];
 
-	NSMutableAttributedString *fullFooter =  [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\nwith \u2665 by NoisyFlake", firstLine]];
+	NSMutableAttributedString *fullFooter = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\nby tallplay \u00b7 after Velvet 2 by NoisyFlake", firstLine]];
 
 	[fullFooter beginEditing];
 	[fullFooter addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:18] range:NSMakeRange(0, [firstLine length])];
 	[fullFooter endEditing];
-	
+
 	UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 100)];
 	footerLabel.font = [UIFont systemFontOfSize:13];
 	footerLabel.textColor = UIColor.systemGrayColor;
@@ -54,25 +54,24 @@
 	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (CFStringRef)@"com.tallplay.velvet3/preferenceUpdate", NULL, NULL, YES);
 }
 
--(void)twitter {
-	NSURL *tweetbot = [NSURL URLWithString:@"tweetbot://NoisyFlake/user_profile/NoisyFlake"];
-	NSURL *twitterrific = [NSURL URLWithString:@"twitterrific://profile?screen_name=NoisyFlake"];
-	NSURL *twitter = [NSURL URLWithString:@"twitter://user?screen_name=NoisyFlake"];
-	NSURL *web = [NSURL URLWithString:@"http://www.twitter.com/NoisyFlake"];
-	
-	if ([[UIApplication sharedApplication] canOpenURL:tweetbot]) {
-        [[UIApplication sharedApplication] openURL:tweetbot options:@{} completionHandler:nil];
-    } else if ([[UIApplication sharedApplication] canOpenURL:twitterrific]) {
-        [[UIApplication sharedApplication] openURL:twitterrific options:@{} completionHandler:nil];
-    } else if ([[UIApplication sharedApplication] canOpenURL:twitter]) {
-        [[UIApplication sharedApplication] openURL:twitter options:@{} completionHandler:nil];
-    } else {
-        [[UIApplication sharedApplication] openURL:web options:@{} completionHandler:nil];
-    }
+-(void)github {
+	[self openLink:@"https://github.com/belubruh123/Velvet3"];
 }
 
+-(void)reportIssue {
+	[self openLink:@"https://github.com/belubruh123/Velvet3/issues"];
+}
+
+// Velvet 3 is a derivative work; the donation link stays pointed at the original author.
 -(void)paypal {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.paypal.me/NoisyFlake"] options:@{} completionHandler:nil];
+	[self openLink:@"https://www.paypal.me/NoisyFlake"];
+}
+
+-(void)openLink:(NSString *)urlString {
+	NSURL *url = [NSURL URLWithString:urlString];
+	if (!url) return;
+
+	[[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 }
 
 -(void)setTweakEnabled:(id)value specifier:(PSSpecifier *)specifier {

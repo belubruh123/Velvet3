@@ -5,8 +5,10 @@
 -(void)setupHeader;
 -(void)setupFooterVersion;
 -(void)resetSettings;
--(void)twitter;
+-(void)github;
+-(void)reportIssue;
 -(void)paypal;
+-(void)openLink:(NSString *)urlString;
 -(void)setTweakEnabled:(id)value specifier:(PSSpecifier *)specifier;
 -(void)respring;
 @end
